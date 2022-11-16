@@ -1,0 +1,2 @@
+variable "members" {}
+variable "permissions" {}
