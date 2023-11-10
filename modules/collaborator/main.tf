@@ -7,10 +7,20 @@ terraform {
   }
 }
 
-resource "github_repository_collaborator" "this" {
-  for_each = { for v in setproduct(var.members, keys(var.permissions), values(var.permissions)) : join(",", v) => v }
+locals {
+	collaborator_members = [
+    for v in setproduct(var.members, keys(var.permissions), values(var.permissions)) : {
+      username   = v[0]
+      repository = v[1]
+			permission = v[2]
+    }
+  ]
+}
 
-  username   = each.value[0]
-  repository = each.value[1]
-  permission = each.value[2]
+resource "github_repository_collaborator" "this" {
+	for_each = { for item in local.collaborator_members : "${item.username}_${item.repository}" => item }
+
+  username   = each.value.username
+  repository = each.value.repository
+  permission = each.value.permission
 }
