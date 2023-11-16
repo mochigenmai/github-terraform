@@ -9,10 +9,10 @@ terraform {
 
 locals {
   collaborator_members = [
-    for v in setproduct(var.members, keys(var.permissions), values(var.permissions)) : {
+    for v in setproduct(var.members, keys(var.permissions)) : {
       username   = v[0]
       repository = v[1]
-      permission = v[2]
+      permission = lookup(var.permissions, v[1])
     }
   ]
 }
